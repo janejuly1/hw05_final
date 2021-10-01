@@ -136,7 +136,9 @@ def follow_index(request):
 def profile_follow(request, username):
     author = get_object_or_404(User, username=username)
     if author == request.user:
-        return redirect(reverse('posts:profile', kwargs={'username': username}))
+        return redirect(reverse(
+            'posts:profile',
+            kwargs={'username': username}))
     if not Follow.objects.filter(user=request.user, author=author).exists():
         Follow.objects.create(user=request.user, author=author)
 
@@ -147,7 +149,9 @@ def profile_follow(request, username):
 def profile_unfollow(request, username):
     author = get_object_or_404(User, username=username)
     if author == request.user:
-        return redirect(reverse('posts:profile', kwargs={'username': username}))
+        return redirect(reverse(
+            'posts:profile',
+            kwargs={'username': username}))
     follow = get_object_or_404(Follow, user=request.user, author=author)
     follow.delete()
 
