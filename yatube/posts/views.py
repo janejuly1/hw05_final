@@ -9,12 +9,13 @@ from .models import Follow, Group, Post, User
 
 
 def index(request):
-    post_list = Post.objects.all()
+    post_list = Post.objects.select_related('group', 'author').all()
     paginator = Paginator(post_list, settings.MAX_RECORDS_PER_PAGE)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     context = {
         'page_obj': page_obj,
+        'index': True,
     }
     return render(request, 'posts/index.html', context)
 
@@ -127,6 +128,7 @@ def follow_index(request):
     page_obj = paginator.get_page(page_number)
     context = {
         'page_obj': page_obj,
+        'follow': True,
     }
 
     return render(request, 'posts/follow.html', context)
@@ -139,8 +141,8 @@ def profile_follow(request, username):
         return redirect(reverse(
             'posts:profile',
             kwargs={'username': username}))
-    if not Follow.objects.filter(user=request.user, author=author).exists():
-        Follow.objects.create(user=request.user, author=author)
+
+    Follow.objects.get_or_create(user=request.user, author=author)
 
     return redirect(reverse('posts:profile', kwargs={'username': username}))
 
